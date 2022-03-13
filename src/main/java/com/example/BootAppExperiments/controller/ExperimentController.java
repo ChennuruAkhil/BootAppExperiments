@@ -89,9 +89,25 @@ public class ExperimentController {
         return changedProperties;
     }
 
-     public void objectTypeTest(Object a, Object b){
+    @GetMapping("difference/objects/introspector")
+    public void differenceIntrospector() throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+        var branches = new ArrayList<Branch>();
+        branches.add(Branch.CE);
+        var branches2 = new ArrayList<Branch>();
+        branches2.add(Branch.CE);
+        branches2.add(Branch.CSE);
+        var s1 = new CollegeDto("GMR", "GMRIT", "JNTUK", branches);
+        BeanInfo beanInfo = Introspector.getBeanInfo(s1.getClass());
+        for (PropertyDescriptor propertyDesc : beanInfo.getPropertyDescriptors()) {
+            String propertyName = propertyDesc.getName();
+            Object value = propertyDesc.getReadMethod().invoke(s1);
+            log.info("Property Name "+propertyName+"  value "+value);
+        }
+    }
+
+
+    public void objectTypeTest(Object a, Object b){
         log.info("#############"+a.getClass().getSimpleName());
         log.info(b.getClass().getSimpleName());
     }
-
 }

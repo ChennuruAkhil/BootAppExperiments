@@ -61,4 +61,9 @@ public class ExperimentController {
         return changedProperties;
     }
 
+     public void objectTypeTest(Object a, Object b){
+        log.info("#############"+a.getClass().getSimpleName());
+        log.info(b.getClass().getSimpleName());
+    }
+
 }

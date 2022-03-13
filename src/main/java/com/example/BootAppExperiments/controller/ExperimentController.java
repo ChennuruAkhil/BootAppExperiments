@@ -61,9 +61,53 @@ public class ExperimentController {
         return changedProperties;
     }
 
-     public void objectTypeTest(Object a, Object b){
+    @GetMapping("difference/objects/reflection2")
+    public List<String> difference2() {
+        var branches = new ArrayList<Branch>();
+        branches.add(Branch.CE);
+        var branches2 = new ArrayList<Branch>();
+        branches2.add(Branch.CE);
+        branches2.add(Branch.CSE);
+        var mapper = new ObjectMapper();
+        var s1 = new CollegeDto("GMR", "GMRIT", "JNTUK", branches);
+        var s2 = new CollegeDto("VIGNAN", "VIT", "JNTUK", branches2);
+        var s1Map= mapper.convertValue(s1,HashMap.class);
+        var s2Map= mapper.convertValue(s2,HashMap.class);
+
+        List<String> changedProperties = new ArrayList<>();
+        for (Field field : s1.getClass().getDeclaredFields()) {
+            Object value1 = s1Map.get(field.getName());
+            Object value2 = s2Map.get(field.getName());
+            if (value1 != null && value2 != null) {
+                System.out.println(field.getName() + "=" + value1);
+                System.out.println(field.getName() + "=" + value2);
+                if (!Objects.equals(value1, value2)) {
+                    changedProperties.add(field.getName());
+                }
+            }
+        }
+        return changedProperties;
+    }
+
+    @GetMapping("difference/objects/introspector")
+    public void differenceIntrospector() throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+        var branches = new ArrayList<Branch>();
+        branches.add(Branch.CE);
+        var branches2 = new ArrayList<Branch>();
+        branches2.add(Branch.CE);
+        branches2.add(Branch.CSE);
+        var s1 = new CollegeDto("GMR", "GMRIT", "JNTUK", branches);
+        BeanInfo beanInfo = Introspector.getBeanInfo(s1.getClass());
+        for (PropertyDescriptor propertyDesc : beanInfo.getPropertyDescriptors()) {
+            String propertyName = propertyDesc.getName();
+            Object value = propertyDesc.getReadMethod().invoke(s1);
+            log.info("Property Name "+propertyName+"  value "+value);
+        }
+    }
+
+
+    public void objectTypeTest(Object a, Object b){
         log.info("#############"+a.getClass().getSimpleName());
         log.info(b.getClass().getSimpleName());
     }
-
 }
